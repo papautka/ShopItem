@@ -19,6 +19,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     var count = 0
 //    var onShopItemOnLongClick : OnShopItemOnLongClick? = null
     var onShopItemOnLongClick : ((ShopItem) -> Unit)? = null
+    var onShopItemClick : ((ShopItem) -> Unit)? = null
 
     var shopList = listOf<ShopItem>()
         set(value) {
@@ -51,6 +52,10 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
             onShopItemOnLongClick?.invoke(shopItem)
             true
         }
+        viewHolder.view.setOnClickListener {
+            onShopItemClick?.invoke(shopItem)
+        }
+
             viewHolder.tvName.text = shopItem.name
             viewHolder.tvCount.text = shopItem.count.toString()
     }
@@ -74,5 +79,9 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     interface OnShopItemOnLongClick {
         fun onShopItemLongClick(shopItem: ShopItem)
 
+    }
+
+    interface OnShopItemClick {
+        fun onShopItemClick(shopItem: ShopItem)
     }
 }
