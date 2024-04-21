@@ -12,35 +12,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.uteev.newshopitemactivity.R
 import com.uteev.newshopitemactivity.domain.ShopItem
 
-class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>(ShopItemDiffCallback()) {
-    class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val tvName = view.findViewById<TextView>(R.id.tv_name)
-        val tvCount = view.findViewById<TextView>(R.id.tv_count)
-    }
+class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
 
-    var count = 0
-//    var onShopItemOnLongClick : OnShopItemOnLongClick? = null
     var onShopItemOnLongClick : ((ShopItem) -> Unit)? = null
     var onShopItemClick : ((ShopItem) -> Unit)? = null
 
 
-    // реализуется под копотом ListAdapter
-//    var shopList = listOf<ShopItem>()
-//        set(value) {
-//            val callBack = ShopListDiffCallBack(field, value)
-//            // метод calculateDiff стравнивает весь список а не только измененные
-//            // за счет этого данный метод достаточно не оптимизирован
-//            val result = DiffUtil.calculateDiff(callBack)
-//            result.dispatchUpdatesTo(this)
-//            field = value
-////            notifyDataSetChanged()
-//        }
-//    override fun getItemCount(): Int {
-//        return shopList.size
-//    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
-//        Log.d("TAG", "onCreateViewHolder + ${++count}")
         val layout = when (viewType) {
             0 -> R.layout.item_shop_disbaled
             else -> R.layout.item_shop_enabled
@@ -55,7 +33,6 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder
 
     override fun onBindViewHolder(viewHolder: ShopItemViewHolder, position: Int) {
         val shopItem = getItem(position)
-        Log.d("TAG", "onBindViewHolder + ${++count}")
 
         viewHolder.view.setOnLongClickListener {
             onShopItemOnLongClick?.invoke(shopItem)
@@ -65,8 +42,8 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder
             onShopItemClick?.invoke(shopItem)
         }
 
-            viewHolder.tvName.text = shopItem.name
-            viewHolder.tvCount.text = shopItem.count.toString()
+        viewHolder.tvName.text = shopItem.name
+        viewHolder.tvCount.text = shopItem.count.toString()
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -83,14 +60,4 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder
         const val MAX_SIZE_POOL = 15
     }
 
-
-    // создаем интерфейс для долгого нажатия
-    interface OnShopItemOnLongClick {
-        fun onShopItemLongClick(shopItem: ShopItem)
-
-    }
-
-    interface OnShopItemClick {
-        fun onShopItemClick(shopItem: ShopItem)
-    }
 }
