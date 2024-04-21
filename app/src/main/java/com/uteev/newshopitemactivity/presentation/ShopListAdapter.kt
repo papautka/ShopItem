@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.uteev.newshopitemactivity.R
 import com.uteev.newshopitemactivity.domain.ShopItem
@@ -23,8 +24,11 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     var shopList = listOf<ShopItem>()
         set(value) {
+            val callBack = ShopListDiffCallBack(field, value)
+            val result = DiffUtil.calculateDiff(callBack)
+            result.dispatchUpdatesTo(this)
             field = value
-            notifyDataSetChanged()
+//            notifyDataSetChanged()
         }
 
     override fun getItemCount(): Int {
@@ -32,7 +36,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
-        Log.d("TAG", "onCreateViewHolder + ${++count}")
+//        Log.d("TAG", "onCreateViewHolder + ${++count}")
         val layout = when (viewType) {
             0 -> R.layout.item_shop_disbaled
             else -> R.layout.item_shop_enabled
@@ -47,6 +51,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     override fun onBindViewHolder(viewHolder: ShopItemViewHolder, position: Int) {
         val shopItem = shopList[position]
+        Log.d("TAG", "onBindViewHolder + ${++count}")
 
         viewHolder.view.setOnLongClickListener {
             onShopItemOnLongClick?.invoke(shopItem)
