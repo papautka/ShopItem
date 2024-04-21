@@ -7,11 +7,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.uteev.newshopitemactivity.R
 import com.uteev.newshopitemactivity.domain.ShopItem
 
-class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
+class ShopListAdapter : ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>(ShopItemDiffCallback()) {
     class ShopItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val tvName = view.findViewById<TextView>(R.id.tv_name)
         val tvCount = view.findViewById<TextView>(R.id.tv_count)
@@ -22,18 +23,21 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     var onShopItemOnLongClick : ((ShopItem) -> Unit)? = null
     var onShopItemClick : ((ShopItem) -> Unit)? = null
 
-    var shopList = listOf<ShopItem>()
-        set(value) {
-            val callBack = ShopListDiffCallBack(field, value)
-            val result = DiffUtil.calculateDiff(callBack)
-            result.dispatchUpdatesTo(this)
-            field = value
-//            notifyDataSetChanged()
-        }
 
-    override fun getItemCount(): Int {
-        return shopList.size
-    }
+    // реализуется под копотом ListAdapter
+//    var shopList = listOf<ShopItem>()
+//        set(value) {
+//            val callBack = ShopListDiffCallBack(field, value)
+//            // метод calculateDiff стравнивает весь список а не только измененные
+//            // за счет этого данный метод достаточно не оптимизирован
+//            val result = DiffUtil.calculateDiff(callBack)
+//            result.dispatchUpdatesTo(this)
+//            field = value
+////            notifyDataSetChanged()
+//        }
+//    override fun getItemCount(): Int {
+//        return shopList.size
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopItemViewHolder {
 //        Log.d("TAG", "onCreateViewHolder + ${++count}")
@@ -50,7 +54,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     }
 
     override fun onBindViewHolder(viewHolder: ShopItemViewHolder, position: Int) {
-        val shopItem = shopList[position]
+        val shopItem = getItem(position)
         Log.d("TAG", "onBindViewHolder + ${++count}")
 
         viewHolder.view.setOnLongClickListener {
@@ -66,7 +70,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (shopList[position].enabled) {
+        if (getItem(position).enabled) {
             return ENABLED
         } else {
             return DISABLED
