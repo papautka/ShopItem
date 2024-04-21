@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NewShopItemActivity</string>
+    <string name="add_shop_item">add_shop_item</string>
 </resources>

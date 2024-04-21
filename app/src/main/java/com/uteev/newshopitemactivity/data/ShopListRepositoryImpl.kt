@@ -7,14 +7,16 @@ import com.uteev.newshopitemactivity.domain.ShopListRepository
 
 object ShopListRepositoryImpl : ShopListRepository {
 
-    private val shopList = mutableListOf<ShopItem>()
+//    private val shopList = mutableListOf<ShopItem>()
+    // благодаря такой реализации при измении обьекта они будут каждый раз сортироваться по id
+    private val shopList = sortedSetOf<ShopItem>({ o1, o2 -> o1.id.compareTo(o2.id)})
     private val shopListLD = MutableLiveData<List<ShopItem>>()
     private var autoIncrement = 0
 
 
 
     init {
-        for (i in 0 until 15) {
+        for (i in 0 until 5) {
             val item = ShopItem("Name $i", i, true)
             addShopItem(item)
         }
