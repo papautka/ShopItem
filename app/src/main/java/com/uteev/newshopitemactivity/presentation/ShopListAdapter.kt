@@ -44,20 +44,12 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
 
     override fun onBindViewHolder(viewHolder: ShopItemViewHolder, position: Int) {
         val shopItem = shopList[position]
-        val status = if (shopItem.enabled) "Enabled" else "Disabled"
 
         viewHolder.view.setOnLongClickListener {
             true
         }
-        if (shopItem.enabled) {
-            viewHolder.tvName.text = status
+            viewHolder.tvName.text = shopItem.name
             viewHolder.tvCount.text = shopItem.count.toString()
-            viewHolder.tvName.setTextColor(ContextCompat.getColor(viewHolder.view.context, R.color.black))
-        } else {
-            viewHolder.tvName.text = status
-            viewHolder.tvCount.text = shopItem.count.toString()
-            viewHolder.tvName.setTextColor(ContextCompat.getColor(viewHolder.view.context, R.color.white))
-        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -71,5 +63,6 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     companion object {
         const val ENABLED = 1
         const val DISABLED = 0
+        const val MAX_SIZE_POOL = 15
     }
 }
