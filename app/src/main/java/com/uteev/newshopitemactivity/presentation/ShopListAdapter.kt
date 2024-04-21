@@ -17,6 +17,7 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
     }
 
     var count = 0
+    var onShopItemOnLongClick : OnShopItemOnLongClick? = null
 
     var shopList = listOf<ShopItem>()
         set(value) {
@@ -46,6 +47,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         val shopItem = shopList[position]
 
         viewHolder.view.setOnLongClickListener {
+            onShopItemOnLongClick?.onShopItemLongClick(shopItem)
+
             true
         }
             viewHolder.tvName.text = shopItem.name
@@ -64,5 +67,12 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>
         const val ENABLED = 1
         const val DISABLED = 0
         const val MAX_SIZE_POOL = 15
+    }
+
+
+    // создаем интерфейс для долгого нажатия
+    interface OnShopItemOnLongClick {
+        fun onShopItemLongClick(shopItem: ShopItem)
+
     }
 }
