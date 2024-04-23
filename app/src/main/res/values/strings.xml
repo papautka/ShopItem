@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">NewShopItemActivity</string>
     <string name="add_shop_item">add_shop_item</string>
+    <string name="hintName">Name:</string>
+    <string name="countHint">Count:</string>
+    <string name="saveElements">Сохранить значения</string>
 </resources>
