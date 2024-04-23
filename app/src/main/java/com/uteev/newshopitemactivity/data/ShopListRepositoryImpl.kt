@@ -16,12 +16,12 @@ object ShopListRepositoryImpl : ShopListRepository {
 
 
 
-    init {
-        for (i in 0 until 20) {
-            val item = ShopItem("Name $i", i, Random.nextBoolean())
-            addShopItem(item)
-        }
-    }
+//    init {
+//        for (i in 0 until 20) {
+//            val item = ShopItem("Name $i", i, Random.nextBoolean())
+//            addShopItem(item)
+//        }
+//    }
 
 
     override fun editShopItem(shopItem: ShopItem) {

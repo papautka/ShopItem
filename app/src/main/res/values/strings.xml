@@ -4,4 +4,7 @@
     <string name="hintName">Name:</string>
     <string name="countHint">Count:</string>
     <string name="saveElements">Сохранить значения</string>
+    <string name="errorName">Введите значение имени корректно!</string>
+    <string name="errorCount">Введите значение числа корректно!</string>
+
 </resources>
