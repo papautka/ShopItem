@@ -17,7 +17,7 @@ object ShopListRepositoryImpl : ShopListRepository {
 
 
     init {
-        for (i in 0 until 200) {
+        for (i in 0 until 20) {
             val item = ShopItem("Name $i", i, Random.nextBoolean())
             addShopItem(item)
         }
@@ -55,5 +55,4 @@ object ShopListRepositoryImpl : ShopListRepository {
     private fun updateList() {
         shopListLD.value = shopList.toList()
     }
-
 }
