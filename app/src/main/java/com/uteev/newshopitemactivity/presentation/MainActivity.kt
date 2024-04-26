@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -17,24 +19,42 @@ import com.uteev.newshopitemactivity.domain.ShopItem
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel : MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
+    private var shopItemContainer : FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setupRecyclerView()
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        viewModel.shopList.observe(this) {
-            // Perform any necessary actions with the shopList
+            setContentView(R.layout.activity_main)
+        shopItemContainer = findViewById(R.id.shop_item_container)
+            // книжная ориентация
+            setupRecyclerView()
+            viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+            viewModel.shopList.observe(this) {
+                // Perform any necessary actions with the shopList
 //            shopListAdapter.shopList = it
-            shopListAdapter.submitList(it)
-        }
-        val buttonAddShopItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
-        buttonAddShopItem.setOnClickListener {
-            val intentAdd = ShopItemActivity.newIntentAddMode(this)
-            intentAdd.putExtra("extra_mode", "mode_add")
-            startActivity(intentAdd)
-        }
+                shopListAdapter.submitList(it)
+            }
+            val buttonAddShopItem = findViewById<FloatingActionButton>(R.id.button_add_shop_item)
+            buttonAddShopItem.setOnClickListener {
+                if(checkScreenOrientation()) {
+                    val intentAdd = ShopItemActivity.newIntentAddMode(this)
+                    intentAdd.putExtra("extra_mode", "mode_add")
+                    startActivity(intentAdd)
+                } else {
+                    launchFragment(ShopItemFragment.newInstanceAddItem())
+                }
+            }
     }
+
+    private fun checkScreenOrientation() : Boolean {
+        return shopItemContainer == null
+    }
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .add(R.id.shop_item_container, fragment)
+            .commit()
+    }
+
     private fun setupRecyclerView() {
         val rvShopList = findViewById<RecyclerView>(R.id.rv_shop_list)
         installRv(rvShopList)
@@ -67,10 +87,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupOnClickListener() {
         shopListAdapter.onShopItemClick = {
-            val intentEdit = ShopItemActivity.newIntentEditMode(this, it.id)
-            intentEdit.putExtra("extra_mode", "mode_edit")
-            intentEdit.putExtra("extra_shop_item_id", it.id)
-            startActivity(intentEdit)
+            if (checkScreenOrientation()) {
+                val intentEdit = ShopItemActivity.newIntentEditMode(this, it.id)
+                intentEdit.putExtra("extra_mode", "mode_edit")
+                intentEdit.putExtra("extra_shop_item_id", it.id)
+                startActivity(intentEdit)
+            } else {
+                launchFragment(ShopItemFragment.newInstanceEditItem(shopItemId = it.id))
+
+            }
         }
     }
 

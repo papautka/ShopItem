@@ -44,9 +44,13 @@ class ShopItemFragment() : Fragment() {
     private var shopItemId = ShopItem.UNDEFINED_ID
     private var screenMode = UNKOWN_MODE
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        parseParams()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        parseParams()
         shopItemViewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         initViews(view)
         changeCountResetError()
