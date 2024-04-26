@@ -18,23 +18,20 @@ import com.google.android.material.textfield.TextInputLayout
 import com.uteev.newshopitemactivity.R
 import com.uteev.newshopitemactivity.domain.ShopItem
 
-class ShopItemFragment(
-    private val screenMode: String = UNKOWN_MODE,
-    private val shopItemId: Int = ShopItem.UNDEFINED_ID
-) : Fragment() {
+class ShopItemFragment() : Fragment() {
 
-        private var shopItemViewModel = ShopItemViewModel()
+    private var shopItemViewModel = ShopItemViewModel()
     private lateinit var shopListAdapter: ShopListAdapter
     private val errorName = shopItemViewModel.inputErrorName
     private val errorCount = shopItemViewModel.inputErrorCount
     private val shopItem = shopItemViewModel.shopItem
     private val shouldCloseScreen = shopItemViewModel.shouldCloseScreen
 
-    private lateinit var textInputName : TextInputLayout
-    private lateinit var textInputCount : TextInputLayout
+    private lateinit var textInputName: TextInputLayout
+    private lateinit var textInputCount: TextInputLayout
     private lateinit var etName: EditText
     private lateinit var etCount: EditText
-    private lateinit var saveButton : Button
+    private lateinit var saveButton: Button
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,9 +41,12 @@ class ShopItemFragment(
         return view
     }
 
+    private var shopItemId = ShopItem.UNDEFINED_ID
+    private var screenMode = UNKOWN_MODE
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-            parseParams()
+        parseParams()
         shopItemViewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         initViews(view)
         changeCountResetError()
@@ -60,7 +60,7 @@ class ShopItemFragment(
         checkFinishActivity()
     }
 
-        private fun initViews(view : View) {
+    private fun initViews(view: View) {
         textInputName = view.findViewById(R.id.til_name)
         textInputCount = view.findViewById(R.id.til_count)
         etName = view.findViewById(R.id.et_name)
@@ -74,13 +74,16 @@ class ShopItemFragment(
         etCount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 shopItemViewModel.resetErrorInputCount()
             }
+
             override fun afterTextChanged(s: Editable?) {
             }
         })
     }
+
     private fun changeNameResetError() {
         etName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -108,6 +111,7 @@ class ShopItemFragment(
             }
         }
     }
+
     private fun checkErrorCount() {
         shopItemViewModel.inputErrorCount.observe(viewLifecycleOwner) {
             val messageError = if (it) {
@@ -116,13 +120,13 @@ class ShopItemFragment(
                 null
             }
             if (messageError != null)
-            textInputCount.error = messageError.toString()
+                textInputCount.error = messageError.toString()
         }
     }
 
     private fun checkFinishActivity() {
         shopItemViewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-                activity?.onBackPressed()
+            activity?.onBackPressed()
 //            requireActivity().finish()
         }
     }
@@ -150,30 +154,48 @@ class ShopItemFragment(
     }
 
     companion object {
-        private const val EXTRA_MODE = "extra_mode"
-        private const val EXTRA_SHOP_ITEM_ID = "extra_shop_item_id"
+        private const val SCREEN_MODE = "extra_mode"
+        private const val SHOP_ITEM_ID = "extra_shop_item_id"
         private const val MODE_ADD = "mode_add"
         private const val MODE_EDIT = "mode_edit"
         private const val UNKOWN_MODE = ""
-        private var shopItemId = ShopItem.UNDEFINED_ID
-        private var screenMode = UNKOWN_MODE
 
-        fun newInstanceAddItem() : ShopItemFragment {
-            return ShopItemFragment(ShopItemActivity.MODE_ADD)
+        fun newInstanceAddItem(): ShopItemFragment {
+            val args = Bundle().apply {
+                putString(SCREEN_MODE, MODE_ADD)
+            }
+            val fragment = ShopItemFragment()
+            fragment.arguments = args
+            return fragment
         }
 
-        fun newInstanceEditItem(shopItemId: Int) : ShopItemFragment {
-            return ShopItemFragment(ShopItemActivity.MODE_EDIT, shopItemId)
+        fun newInstanceEditItem(shopItemId: Int): ShopItemFragment {
+            val args = Bundle().apply {
+                putString(SCREEN_MODE, MODE_EDIT)
+                putInt(SHOP_ITEM_ID, shopItemId)
+            }
+            return ShopItemFragment().apply {
+                arguments = args
+            }
         }
 
     }
 
     private fun parseParams() {
-        if (screenMode != MODE_EDIT && screenMode != MODE_ADD) {
-            throw RuntimeException("Unknown mode $screenMode")
+        val args = requireArguments()
+        if (!args.containsKey(SCREEN_MODE)) {
+            throw RuntimeException("Param screen mode is absent")
         }
-        if (screenMode == MODE_EDIT && shopItemId == ShopItem.UNDEFINED_ID) {
-                throw RuntimeException("Param extra shop item id is absent!")
+        val mode = args.getString(SCREEN_MODE)
+        if (mode != MODE_EDIT && mode != MODE_ADD) {
+                throw RuntimeException("Unknown screen mode $mode")
+        }
+        screenMode = mode
+        if (screenMode == MODE_EDIT) {
+            if (!args.containsKey(SHOP_ITEM_ID)) {
+                throw RuntimeException("Param shop item id is absent")
             }
+            shopItemId = args.getInt(SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
     }
+}
