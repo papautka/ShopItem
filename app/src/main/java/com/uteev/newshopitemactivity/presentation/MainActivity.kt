@@ -6,9 +6,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.uteev.newshopitemactivity.R
 import com.uteev.newshopitemactivity.domain.ShopItem
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
     private lateinit var viewModel : MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
     private var shopItemContainer : FragmentContainerView? = null
@@ -40,7 +42,8 @@ class MainActivity : AppCompatActivity() {
                     intentAdd.putExtra("extra_mode", "mode_add")
                     startActivity(intentAdd)
                 } else {
-                    launchFragment(ShopItemFragment.newInstanceAddItem())
+                    val fragment = ShopItemFragment.newInstanceAddItem()
+                    launchFragment(fragment, "mode_add")
                 }
             }
     }
@@ -49,10 +52,17 @@ class MainActivity : AppCompatActivity() {
         return shopItemContainer == null
     }
 
-    private fun launchFragment(fragment: Fragment) {
+    private fun launchFragment(fragment: Fragment, name : String) {
+//        supportFragmentManager.popBackStack()
         supportFragmentManager.beginTransaction()
-            .add(R.id.shop_item_container, fragment)
+            .replace(R.id.shop_item_container, fragment)
+            .addToBackStack(name)
             .commit()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        supportFragmentManager.popBackStack("mode_add", FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 
     private fun setupRecyclerView() {
@@ -93,10 +103,16 @@ class MainActivity : AppCompatActivity() {
                 intentEdit.putExtra("extra_shop_item_id", it.id)
                 startActivity(intentEdit)
             } else {
-                launchFragment(ShopItemFragment.newInstanceEditItem(shopItemId = it.id))
+                val fragment = ShopItemFragment.newInstanceEditItem(it.id)
+                launchFragment(fragment, "mode_edit")
 
             }
         }
+    }
+
+    override fun onEditingFinished() {
+        Toast.makeText(this@MainActivity,"Success", Toast.LENGTH_SHORT).show()
+        supportFragmentManager.popBackStack()
     }
 
     private fun touchSwipeRemove(rvShopList: RecyclerView?) {
@@ -119,5 +135,10 @@ class MainActivity : AppCompatActivity() {
         }
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(rvShopList)
+    }
+
+    public fun onEditFinished() {
+        supportFragmentManager.popBackStack()
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
     }
 }

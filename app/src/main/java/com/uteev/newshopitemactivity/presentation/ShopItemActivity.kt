@@ -17,7 +17,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.uteev.newshopitemactivity.R
 import com.uteev.newshopitemactivity.domain.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     private var shopItemId = ShopItem.UNDEFINED_ID
     private var screenMode = UNKOWN_MODE
@@ -26,7 +26,15 @@ class ShopItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
         parseIntent()
-        launchRightMode()
+        if (savedInstanceState == null) {
+            launchRightMode()
+        }
+
+    }
+
+    override fun onEditingFinished() {
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
+        finish()
     }
 
     private fun launchRightMode() {
@@ -36,8 +44,10 @@ class ShopItemActivity : AppCompatActivity() {
             else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
         supportFragmentManager.beginTransaction()
-            .add(R.id.shop_item_container, fragment)
+            .replace(R.id.shop_item_container, fragment)
             .commit()
+        Log.d("TAG", "launchRightMode: $screenMode")
+        supportFragmentManager.popBackStack()
     }
 
     companion object {

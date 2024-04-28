@@ -32,6 +32,18 @@ class ShopItemFragment() : Fragment() {
     private lateinit var etName: EditText
     private lateinit var etCount: EditText
     private lateinit var saveButton: Button
+
+    private lateinit var onEditingFinishedListener : OnEditingFinishedListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if(context is OnEditingFinishedListener) {
+            onEditingFinishedListener = context
+        } else {
+            throw RuntimeException("Activity must implement OnEditingFinishedListener")
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -130,8 +142,12 @@ class ShopItemFragment() : Fragment() {
 
     private fun checkFinishActivity() {
         shopItemViewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+//            activity?.onBackPressed()
 //            requireActivity().finish()
+
+//            (activity as MainActivity).onEditFinished() // так делать не надо
+                // так как фрагмент уже уничтожен
+            onEditingFinishedListener?.onEditingFinished()
         }
     }
 
@@ -183,6 +199,10 @@ class ShopItemFragment() : Fragment() {
             }
         }
 
+    }
+
+    interface OnEditingFinishedListener {
+        fun onEditingFinished()
     }
 
     private fun parseParams() {
